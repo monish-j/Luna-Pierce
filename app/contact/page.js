@@ -49,19 +49,12 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
+    // Demo form - show message that this is for demonstration only
     setTimeout(() => {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        budget: '',
-        timeline: ''
-      });
-    }, 2000);
+      alert('📧 DEMO PORTFOLIO - This is a demonstration form only. No actual message has been sent. In a real scenario, this would connect to a backend service to process your message.');
+      // Don't clear the form or show success page for demo
+    }, 1500);
   };
 
   const contactInfo = [
@@ -161,9 +154,23 @@ export default function ContactPage() {
             
             {/* Contact Form */}
             <div className={`transform transition-all duration-1000 ${isVisible.form ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`} id="form">
-              <h2 className="text-3xl font-light mb-8 text-slate-900 dark:text-white transition-colors duration-300">
+              <h2 className="text-3xl font-light mb-4 text-slate-900 dark:text-white transition-colors duration-300">
                 Tell Me About Your Project
               </h2>
+              
+              <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-center">
+                  <div className="text-amber-600 dark:text-amber-400 mr-3">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="text-sm">
+                    <div className="font-medium text-amber-800 dark:text-amber-300">Demo Portfolio</div>
+                    <div className="text-amber-700 dark:text-amber-400">This is a demonstration form. No actual messages will be sent.</div>
+                  </div>
+                </div>
+              </div>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
@@ -286,12 +293,12 @@ export default function ContactPage() {
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Sending...
+                      Demo Processing...
                     </>
                   ) : (
                     <>
                       <Send className="mr-3 w-5 h-5" />
-                      Send Message
+                      Send Demo Message
                     </>
                   )}
                 </button>

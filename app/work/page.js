@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Eye, Heart, ExternalLink, X, Filter } from 'lucide-react';
+import { Eye, Heart, ExternalLink, X, Filter, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
 
 export default function WorkPage() {
@@ -171,6 +171,44 @@ export default function WorkPage() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category === activeCategory);
 
+  const getCurrentIndex = () => {
+    return filteredItems.findIndex(item => item.id === selectedImage?.id);
+  };
+
+  const goToPrevious = () => {
+    const currentIndex = getCurrentIndex();
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredItems.length - 1;
+    setSelectedImage(filteredItems[prevIndex]);
+  };
+
+  const goToNext = () => {
+    const currentIndex = getCurrentIndex();
+    const nextIndex = currentIndex < filteredItems.length - 1 ? currentIndex + 1 : 0;
+    setSelectedImage(filteredItems[nextIndex]);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!selectedImage) return;
+      
+      if (e.key === 'Escape') {
+        closeModal();
+      } else if (e.key === 'ArrowLeft') {
+        goToPrevious();
+      } else if (e.key === 'ArrowRight') {
+        goToNext();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImage]);
+
   return (
     <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white transition-colors duration-300">
       <Navigation />
@@ -309,14 +347,55 @@ export default function WorkPage() {
       {selectedImage && (
         <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="relative max-w-6xl w-full">
-            <button 
-              onClick={() => setSelectedImage(null)}
-              className="absolute -top-16 right-0 text-white hover:text-pink-500 transition-colors z-10"
-            >
-              <X className="w-8 h-8" />
-            </button>
+            {/* Navigation Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={closeModal}
+                  className="flex items-center space-x-2 text-white hover:text-pink-500 transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="text-sm">Back to Gallery</span>
+                </button>
+                <div className="text-sm text-gray-400">
+                  {getCurrentIndex() + 1} of {filteredItems.length}
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={goToPrevious}
+                  className="p-2 text-white hover:text-pink-500 transition-colors"
+                  title="Previous image (←)"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button 
+                  onClick={goToNext}
+                  className="p-2 text-white hover:text-pink-500 transition-colors"
+                  title="Next image (→)"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+                <button 
+                  onClick={closeModal}
+                  className="p-2 text-white hover:text-pink-500 transition-colors ml-4"
+                  title="Close (ESC)"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
             <div className="grid lg:grid-cols-2 gap-8 items-center">
-              <div className="order-2 lg:order-1">
+              <div className="order-2 lg:order-1 relative group">
+                {/* Previous Image Button */}
+                <button 
+                  onClick={goToPrevious}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                  title="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                
                 <Image 
                   src={selectedImage.image} 
                   alt={selectedImage.title}
@@ -324,6 +403,15 @@ export default function WorkPage() {
                   height={600}
                   className="w-full h-auto rounded-2xl shadow-2xl"
                 />
+                
+                {/* Next Image Button */}
+                <button 
+                  onClick={goToNext}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                  title="Next image"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
               </div>
               <div className="order-1 lg:order-2 space-y-6">
                 <div className="flex items-center justify-between">
@@ -358,6 +446,24 @@ export default function WorkPage() {
                     SHARE
                   </button>
                 </div>
+              </div>
+            </div>
+            
+            {/* Keyboard Navigation Hint */}
+            <div className="mt-8 text-center">
+              <div className="text-xs text-gray-500 flex items-center justify-center space-x-6">
+                <span className="flex items-center space-x-1">
+                  <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">←</kbd>
+                  <span>Previous</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                  <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">→</kbd>
+                  <span>Next</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                  <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">ESC</kbd>
+                  <span>Close</span>
+                </span>
               </div>
             </div>
           </div>
